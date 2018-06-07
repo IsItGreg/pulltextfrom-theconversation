@@ -1,5 +1,6 @@
 import pandas as pd
 from readArticle import readArticle
+from scienceTechFile import scienceTechFile
 
 
 def main():
@@ -13,6 +14,12 @@ def main():
     urls = []
     tags = []
 
+    stindex = 0
+    stindexes = []
+    stauthors = []
+    sttitles = []
+    sturls = []
+
     df = pd.read_csv("tc_articles (7).csv")
 
     array = df.values.tolist()
@@ -23,13 +30,26 @@ def main():
         urls.append(list[1])
         tags.append(list[2])
         curindex += 1
-        print "{:.4f}".format(curindex/6100.0) + "% done"
+        if list[2] == "Science + Technology":
+            stauthor = scienceTechFile(list[1], stindex)
+            if stauthor != "tooshort":
+                stindexes.append("{:0>3d}".format(stindex))
+                stauthors.append(stauthor)
+                sttitles.append(list[0])
+                sturls.append(list[1])
+                stindex += 1
+
+        print "{:.2f}".format(curindex/61.0) + "% done"
 
     print ("Done: " + str(curindex))
 
     data = {'Author': authors, 'Title': titles, 'URL': urls, 'Category' : tags}
     output = pd.DataFrame(data, index=indexes).rename_axis("Text #", axis=1)
     output.to_csv('conversationMetadata.txt', sep='\t', encoding='utf-8')
+
+    stdata = {'Author': stauthors, 'Title': sttitles, 'URL': sturls}
+    output = pd.DataFrame(stdata, index=stindexes).rename_axis("Text #", axis=1)
+    output.to_csv('scitech_conversationMetadata.txt', sep='\t', encoding='utf-8')
 
 
 if __name__ == "__main__":
