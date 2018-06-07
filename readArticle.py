@@ -24,7 +24,7 @@ def readArticle(url, number):
     cclicense = soup.find("a", {"class" : "license-logo"})
     author = soup.find("meta", {"name" : "author"})['content']
     with open("conversation"+"{:0>3d}".format(number)+".txt", "w") as text_file:
-        for line in soup.find_all(['p', 'h2']):
+        for line in soup.find_all(['p', 'h2', 'h3']):
             if "Write an article and join a growing community of more than" in str(line):
                 #print "Works"
                 shouldPrint = False
@@ -35,7 +35,9 @@ def readArticle(url, number):
                             text_file.write(' ')
                         text_file.write(string.encode('utf-8'))
                 else:
-                    if line.name == 'h2':
+                    if line.name == 'h3' and "You might also like" in str(line):
+                        shouldPrint = False
+                    elif line.name == 'h2':
                         text_file.write(line.string.encode('utf-8').upper())
                     else:
                         text_file.write(line.string.encode('utf-8'))
